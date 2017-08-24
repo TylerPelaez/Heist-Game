@@ -11,8 +11,6 @@
 class Player : public Entity
 {
 public:
-	FTexture mouseSprite;
-
 	bool walking = false;
 	float maxWalkSpeed = 5.0f;
 	float acceleration = 2.0f;
@@ -28,7 +26,12 @@ public:
 
 	void update( float dt ) override;
 
+	bool setMouseSprite(std::string mouseSpritePath);
+	const FTexture* getMouseSprite();
+
+
 private:
+	FTexture mouseSprite;
 	void move() override;
 };
 

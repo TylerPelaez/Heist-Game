@@ -3,13 +3,7 @@
 
 void Player::move()
 {
-	pos.X( pos.X() + velocity.X() );
-	pos.Y( pos.Y() + velocity.Y() );
-	collider.boundingBox.x = pos.X();
-	collider.boundingBox.y = pos.Y();
-	collider.boundingBox.w = sprite.getWidth();
-	collider.boundingBox.h = sprite.getHeight();
-
+	setPos(Vector2(pos.X() + velocity.X(), pos.Y() + velocity.Y()));
 
 	float playerRight = pos.X() + sprite.getWidth();
 	float playerLeft = pos.X();
@@ -135,8 +129,7 @@ void Player::render()
 
 	for ( std::list<Bullet>::iterator itr = bulletList.begin(); itr != bulletList.end(); ++itr )
 	{
-		SDL_Rect bulletRenderQuad = { (int)( itr->pos.X() - camX ), (int)( itr->pos.Y() - camY ), itr->sprite.getWidth(), itr->sprite.getHeight() };
-		itr->sprite.render( NULL, bulletRenderQuad );
+		itr->render();
 	}
 }
 
@@ -219,4 +212,14 @@ void Player::update( float dt )
 
 	updateBulletList( dt );
 	move();
+}
+
+bool Player::setMouseSprite(std::string spritePath)
+{
+	return mouseSprite.loadFromFile(spritePath);
+}
+
+const FTexture* Player::getMouseSprite()
+{
+	return &mouseSprite;
 }

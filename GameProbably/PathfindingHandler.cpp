@@ -71,7 +71,7 @@ void PathfindingHandler::render()
 
 void PathfindingHandler::initializeWalkableArea( int p )
 {
-	player->pos.setXY( 63, 290 );
+	player->setPos( Vector2(63.0f, 290.0f) );
 
 	player->walking = false;
 	walktox = 0;

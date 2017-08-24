@@ -9,9 +9,8 @@
 class Entity
 {
 public:
-	Vector2 pos;
+	
 	Vector2 velocity;
-	FTexture sprite;
 	int team;
 
 	PolygonMap *map;
@@ -36,6 +35,7 @@ public:
 		, maxCooldown( 0.5f )
 		, bulletVelocity( 700.0f )
 		, health( 100.0f )
+		, sprite()
 	{}
 
 	virtual void render( );
@@ -46,7 +46,17 @@ public:
 		move();
 	}
 
+	bool setSprite(std::string path);
+	const FTexture* getSprite();
+
+	void setPos(Vector2 newPos);
+	Vector2 getPos();
+
 protected:
+
+	Vector2 pos;
+	FTexture sprite;
+
 	virtual void updateBulletList( float dt );
 
 	virtual void fireAt( Vector2 target );
@@ -57,4 +67,5 @@ protected:
 	{
 		return;
 	}
+	
 };

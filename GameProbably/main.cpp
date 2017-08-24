@@ -84,9 +84,15 @@ bool init()
 bool loadMedia()
 {
 	bool success = true;
-	success = player->sprite.loadFromFile( "assets/playerDot.png" );
+	success = player->setSprite( "assets/playerDot.png" );
+	if (!success)
+		return success;
 	success = pfh->backgroundSprite.loadFromFile( "assets/wallpaperjpg.png" );
-	success = player->mouseSprite.loadFromFile( "assets/reticle.png" );
+	if (!success)
+		return success;
+	success = player->setMouseSprite( "assets/reticle.png" );
+	if (!success)
+		return success;
 	player->bulletSpritePath = "assets/bullet.png";
 
 	return success;
@@ -127,8 +133,8 @@ void update( float dt )
 	//player->move();
 	player->update( dt );
 
-	camera.x = ( player->pos.X() + player->sprite.getWidth() / 2 ) - SCREEN_WIDTH  / 2;
-	camera.y = ( player->pos.Y() + player->sprite.getHeight() / 2 ) - SCREEN_HEIGHT / 2;
+	camera.x = ( player->getPos().X() + player->getSprite()->getWidth() / 2 ) - SCREEN_WIDTH  / 2;
+	camera.y = ( player->getPos().Y() + player->getSprite()->getHeight() / 2 ) - SCREEN_HEIGHT / 2;
 
 	if ( camera.x < 0 ) 
 	{ 

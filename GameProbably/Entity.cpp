@@ -14,8 +14,7 @@ void Entity::render()
 
 	for ( std::list<Bullet>::iterator itr = bulletList.begin(); itr != bulletList.end(); ++itr )
 	{
-		SDL_Rect bulletRenderQuad = { (int)( itr->pos.X() - camX ), (int)( itr->pos.Y() - camY ), itr->sprite.getWidth(), itr->sprite.getHeight() };
-		itr->sprite.render( NULL, bulletRenderQuad );
+		itr->render();
 	}
 }
 
@@ -102,13 +101,37 @@ void Entity::fireAt( Vector2 target )
 	cooldownTimer = maxCooldown;
 
 	Vector2 center( pos.X() + ( (float)sprite.getWidth() / 2.0f ), pos.Y() + ( (float)sprite.getHeight() / 2.0f ) );
-	Bullet bullet( center, 0.0f, bulletDamage, team, bulletVelocity, this, 5.0f );
+	Bullet bullet( center, 0.0f, bulletDamage, team, bulletVelocity, this, map, 5.0f );
 	bulletList.push_back( bullet );
 
-	bulletList.back().setTexture( bulletSpritePath );
+	bulletList.back().setSprite( bulletSpritePath );
 
-	Vector2 offset( ( (float)bulletList.back().sprite.getWidth() / 2.0f ), ( (float)bulletList.back().sprite.getHeight() / 2.0f ) );
-	bulletList.back().pos = Vector2( bulletList.back().pos.X() - offset.X(), bulletList.back().pos.Y() - offset.Y() );
+	Vector2 offset( ( (float)bulletList.back().getSprite()->getWidth() / 2.0f ), ( (float)bulletList.back().getSprite()->getHeight() / 2.0f ) );
+	bulletList.back().setPos(Vector2( bulletList.back().getPos().X() - offset.X(), bulletList.back().getPos().Y() - offset.Y() ));
 	
 	bulletList.back().rads = getRadiansToTarget( target );
+}
+
+bool Entity::setSprite(std::string path)
+{
+	bool ret = sprite.loadFromFile(path);
+	collider.boundingBox = { (int)pos.X(), (int)pos.Y(), sprite.getWidth(), sprite.getHeight() };
+	return ret;
+}
+
+const FTexture* Entity::getSprite()
+{
+	return &sprite;
+}
+
+void Entity::setPos(Vector2 newPos)
+{
+	pos.setXY(newPos.X(), newPos.Y());
+	collider.boundingBox.x = pos.X();
+	collider.boundingBox.y = pos.Y();
+}
+
+Vector2 Entity::getPos()
+{
+	return pos;
 }
