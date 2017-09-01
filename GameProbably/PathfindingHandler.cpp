@@ -9,7 +9,20 @@ PathfindingHandler::PathfindingHandler( Player* p)
 
 void PathfindingHandler::update( float dt, float camX, float camY )
 {
-	calculateEnemyPaths();
+	pathResetTimer -= dt;
+	if (pathResetTimer <= 0 || updateNeeded)
+	{
+		pathResetTimer = pathResetMax;
+		updateNeeded = false;
+		calculateEnemyPaths();
+	}
+		
+	for (auto enemy : enemies)
+	{
+		enemy->update(dt);
+		if (!enemy->walking)
+			updateNeeded = true;
+	}
 }
 
 void PathfindingHandler::updatePlayerNode()
@@ -66,6 +79,7 @@ void PathfindingHandler::assignPaths()
 		enemy->walkpath = dijkstra.getPath(playerIndex, polygonMap.mainwalkgraph.nodes.size() + 1 + i);  //necessarily the correct enemy for the location
 		enemy->walkpath.erase(enemy->walkpath.begin());
 		enemy->currentwalknode = enemy->walkpath[0];
+		enemy->walking = true;
 		
 	}
 }

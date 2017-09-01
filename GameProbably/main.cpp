@@ -154,10 +154,7 @@ void update( float dt )
 	}
 
 	pfh->update( dt, camera.x, camera.y );
-	for (auto enemy : pfh->enemies)
-	{
-		enemy->update(dt);
-	}
+	
 
 }
 
