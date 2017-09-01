@@ -120,6 +120,7 @@
   <ItemGroup>
     <ClCompile Include="Bullet.cpp" />
     <ClCompile Include="Collider.cpp" />
+    <ClCompile Include="Enemy.cpp" />
     <ClCompile Include="Entity.cpp" />
     <ClCompile Include="FTexture.cpp" />
     <ClCompile Include="main.cpp" />
@@ -128,10 +129,10 @@
     <ClCompile Include="PolygonMap.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="AstarAlgorithm.h" />
+    <ClInclude Include="DijkstraAlgorithm.h" />
     <ClInclude Include="bullet.h" />
     <ClInclude Include="Collider.h" />
-    <ClInclude Include="Dijkstras.h" />
+    <ClInclude Include="Enemy.h" />
     <ClInclude Include="Entity.h" />
     <ClInclude Include="FTexture.h" />
     <ClInclude Include="Globals.h" />
@@ -144,6 +145,9 @@
     <ClInclude Include="Polygon.h" />
     <ClInclude Include="PolygonMap.h" />
     <ClInclude Include="Vector2.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <Natvis Include="DebugFormat.natvis" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

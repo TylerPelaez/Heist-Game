@@ -23,19 +23,24 @@ public:
 	float cooldownTimer = 0.0f;
 	float bulletDamage = 5.0f;
 	float bulletVelocity;
+
+	float maxWalkSpeed = 5.0f;
+	float acceleration = 2.0f;
 	
 	std::list<Bullet> bulletList;
 	std::string bulletSpritePath;
 	
+	
 
 
-	Entity()
+	Entity(PolygonMap* _map = NULL)
 		: pos( 0, 0 )
 		, velocity( 0, 0 )
 		, maxCooldown( 0.5f )
 		, bulletVelocity( 700.0f )
 		, health( 100.0f )
 		, sprite()
+		, map(_map)
 	{}
 
 	virtual void render( );

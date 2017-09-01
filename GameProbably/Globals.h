@@ -16,8 +16,8 @@ extern SDL_Renderer* gRenderer;
 
 enum TEAM
 {
-	players,
-	enemies
+	PLAYERS,
+	ENEMIES
 };
 
 extern SDL_Rect camera;

@@ -12,14 +12,11 @@ class Player : public Entity
 {
 public:
 	bool walking = false;
-	float maxWalkSpeed = 5.0f;
-	float acceleration = 2.0f;
-
 
 
 	Player()
 	{
-		team = TEAM::players;
+		team = TEAM::PLAYERS;
 	}
 
 	void render() override;

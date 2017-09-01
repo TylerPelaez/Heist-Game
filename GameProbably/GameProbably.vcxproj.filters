@@ -45,6 +45,9 @@
     <ClCompile Include="Entity.cpp">
       <Filter>Source Files\entities</Filter>
     </ClCompile>
+    <ClCompile Include="Enemy.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="GraphNode.h">
@@ -54,9 +57,6 @@
       <Filter>Source Files\pathfinding</Filter>
     </ClInclude>
     <ClInclude Include="Graph.h">
-      <Filter>Source Files\pathfinding</Filter>
-    </ClInclude>
-    <ClInclude Include="AstarAlgorithm.h">
       <Filter>Source Files\pathfinding</Filter>
     </ClInclude>
     <ClInclude Include="IndexedProrityQueue.h">
@@ -69,9 +69,6 @@
       <Filter>Source Files\pathfinding</Filter>
     </ClInclude>
     <ClInclude Include="PathfindingHandler.h">
-      <Filter>Source Files\pathfinding</Filter>
-    </ClInclude>
-    <ClInclude Include="Dijkstras.h">
       <Filter>Source Files\pathfinding</Filter>
     </ClInclude>
     <ClInclude Include="Vector2.h">
@@ -95,5 +92,14 @@
     <ClInclude Include="Entity.h">
       <Filter>Source Files\entities</Filter>
     </ClInclude>
+    <ClInclude Include="Enemy.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="DijkstraAlgorithm.h">
+      <Filter>Source Files\pathfinding</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <Natvis Include="DebugFormat.natvis" />
   </ItemGroup>
 </Project>

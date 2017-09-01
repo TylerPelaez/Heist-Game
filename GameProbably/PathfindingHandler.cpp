@@ -1,25 +1,83 @@
 #include "PathfindingHandler.h"
 
-PathfindingHandler::PathfindingHandler( Player* p )
-	: polygonMap( SCREEN_WIDTH, SCREEN_HEIGHT )
+PathfindingHandler::PathfindingHandler( Player* p)
+	: polygonMap( SCREEN_WIDTH, SCREEN_HEIGHT, this )
 {
 	player = p;
+	enemies = std::vector<Enemy*>();
 }
 
 void PathfindingHandler::update( float dt, float camX, float camY )
 {
-	/*if ( player->walking )
+	calculateEnemyPaths();
+}
+
+void PathfindingHandler::updatePlayerNode()
+{
+	Vector2 playerLocation = Vector2(player->getPos());
+	GraphNode startNode = GraphNode(Vector2(playerLocation.X(), playerLocation.Y()));
+
+	playerIndex = polygonMap.walkgraph.nodes.size();
+	polygonMap.walkgraph.addNode(startNode);
+	//printf("%d\n", polygonMap.walkgraph.nodes.size());
+	
+	for (unsigned int c_index = 0; c_index < polygonMap.walkgraph.nodes.size() - 1; c_index++) // Now we add edges in LOS from Player
 	{
-		walkPlayer();
+		Vector2 c = Vector2(polygonMap.walkgraph.nodes[c_index].pos.X(), polygonMap.walkgraph.nodes[c_index].pos.Y());
+		if (polygonMap.InLineOfSight(playerLocation, c))
+		{
+			polygonMap.walkgraph.addEdge(GraphEdge(playerIndex, c_index, polygonMap.Distance(playerLocation, c)));
+			polygonMap.walkgraph.addEdge(GraphEdge(c_index, playerIndex, polygonMap.Distance(playerLocation, c)));
+		}
 	}
-	else
+
+}
+
+void PathfindingHandler::updateEnemyNodes()
+{
+	for (auto& enemy : enemies)
 	{
-		int x, y;
-		SDL_GetMouseState( &x, &y );
-		x += camX;
-		y += camY;
-		walkpath = polygonMap.calculatePath( Vector2( player->pos.X(), player->pos.Y() ), Vector2( x, y ) );
-	}*/
+		Vector2 enemyLocation = Vector2(enemy->getPos());
+		GraphNode enemyNode = GraphNode(Vector2(enemyLocation.X(), enemyLocation.Y()));
+
+		int enemyIndex = polygonMap.walkgraph.nodes.size();
+		polygonMap.walkgraph.addNode(enemyNode);
+
+		for (unsigned int c_index = 0; c_index < polygonMap.walkgraph.nodes.size() - 1; c_index++) // Now we add edges in LOS from Enemies
+		{
+			Vector2 c = Vector2(polygonMap.walkgraph.nodes[c_index].pos.X(), polygonMap.walkgraph.nodes[c_index].pos.Y());
+			if (polygonMap.InLineOfSight(enemyLocation, c))
+			{
+				polygonMap.walkgraph.addEdge(GraphEdge(enemyIndex, c_index, polygonMap.Distance(enemyLocation, c)));
+				polygonMap.walkgraph.addEdge(GraphEdge(c_index, enemyIndex, polygonMap.Distance(enemyLocation, c)));
+			}
+		}
+
+	}
+}
+
+void PathfindingHandler::assignPaths()
+{
+	DijkstraAlgorithm dijkstra = DijkstraAlgorithm(polygonMap.walkgraph, playerIndex);
+
+	for (unsigned int i = 0; i < enemies.size(); ++i)
+	{
+		Enemy* enemy = enemies[i];
+		enemy->walkpath = dijkstra.getPath(playerIndex, polygonMap.mainwalkgraph.nodes.size() + 1 + i);  //necessarily the correct enemy for the location
+		enemy->walkpath.erase(enemy->walkpath.begin());
+		enemy->currentwalknode = enemy->walkpath[0];
+		
+	}
+}
+
+void PathfindingHandler::calculateEnemyPaths()
+{
+	polygonMap.walkgraph = polygonMap.mainwalkgraph.clone();
+
+	updatePlayerNode();
+	updateEnemyNodes();
+	
+	assignPaths();
 }
 
 void PathfindingHandler::render()
@@ -29,56 +87,27 @@ void PathfindingHandler::render()
 	polygonMap.render(camera.x, camera.y);
 
 	polygonMap.walkgraph.render( 0xFF, 0x00, 0x00, 0x00, 0xFF, 0x00, camera.x, camera.y );
+
+	for (unsigned int i = 0; i < enemies.size(); i++)
+	{
+		enemies[i]->render();
+	}
 }
 
 
-//void PathfindingHandler::walkPlayer()
-//{
-//	float tempwalktox = polygonMap.walkgraph.nodes[currentwalknode].pos.X();
-//	float tempwalktoy = polygonMap.walkgraph.nodes[currentwalknode].pos.Y();
-//
-//	Vector2 b = Vector2( player->pos.X(), player->pos.Y() );
-//	Vector2 a = Vector2( tempwalktox, tempwalktoy );
-//
-//	Vector2 c = Vector2::Subtract( a, b );
-//
-//	if ( c.length() >= player->walkspeed )
-//	{
-//		c.normalize();
-//		c.X( c.X() * player->walkspeed );
-//		c.Y( c.Y() * player->walkspeed );
-//	}
-//
-//	b = Vector2::Add( b, c );
-//
-//	player->pos.X( b.X() );
-//	player->pos.Y( b.Y() );
-//
-//	if ( walkpath.size() > 0 )
-//	{
-//		if ( tempwalktox == player->pos.X() && tempwalktoy == player->pos.Y() )
-//		{
-//			currentwalknode = walkpath[0];
-//			walkpath.erase( walkpath.begin() );
-//		}
-//	}
-//	if ( walktox == player->pos.X() && walktoy == player->pos.Y() )
-//	{
-//		player->walking = false;
-//	}
-//
-//}
-
 void PathfindingHandler::initializeWalkableArea( int p )
 {
-	player->setPos( Vector2(63.0f, 290.0f) );
+	player->setPos( Vector2(1000.0f, 1000.0f) );
 
-	player->walking = false;
-	walktox = 0;
-	walktoy = 0;
-	currentwalknode = 0;
+	enemies.push_back(new Enemy(&polygonMap));
+
+	for (unsigned int i = 0; i < enemies.size(); i++)
+	{
+		enemies[i]->setPos(Vector2(2000.0f, 1500.0f));
+	}
+
 	int polyId = 0;
-	polygonMap = PolygonMap( SCREEN_WIDTH, SCREEN_HEIGHT );
+	polygonMap = PolygonMap( SCREEN_WIDTH, SCREEN_HEIGHT, this );
 	polygonMap.polygons.push_back (Polygon());
 	if ( p == 1 )
 	{
@@ -86,18 +115,6 @@ void PathfindingHandler::initializeWalkableArea( int p )
 		polygonMap.polygons[polyId].addPoint( 3839, 0 );
 		polygonMap.polygons[polyId].addPoint( 3839, 2159 );
 		polygonMap.polygons[polyId].addPoint( 0, 2159 );
-
-
-
-		/*polygonMap.polygons[polyId].addPoint( 4, 100 );
-		polygonMap.polygons[polyId].addPoint( 400, 100 );
-		polygonMap.polygons[polyId].addPoint( 400, 200 );
-		polygonMap.polygons[polyId].addPoint( 500, 200 );
-		polygonMap.polygons[polyId].addPoint( 500, 100 );
-		polygonMap.polygons[polyId].addPoint( 800, 101 );
-		polygonMap.polygons[polyId].addPoint( 1000, 340 );
-		polygonMap.polygons[polyId].addPoint( 1000, 700 );
-		polygonMap.polygons[polyId].addPoint( 3, 700 );*/
 		polyId++;
 
 		polygonMap.polygons.push_back( Polygon() );

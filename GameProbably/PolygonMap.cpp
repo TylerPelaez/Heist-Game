@@ -1,13 +1,13 @@
 #include "PolygonMap.h"
+#include "PathfindingHandler.h"
 
-PolygonMap::PolygonMap( float w, float h )
+PolygonMap::PolygonMap( float w, float h, PathfindingHandler* _pfh )
 {
 	mainwalkgraph = Graph();
 	calculatedPath = std::vector<int>();
-	startNodeIndex = 0;
-	endNodeIndex = 0;
 	vertices_concave = std::vector<Vector2>();
 	polygons = std::vector<class Polygon>();
+	pfh = _pfh;
 }
 
 
@@ -46,79 +46,6 @@ void PolygonMap::CreateGraph()
 			}
 		}
 	}
-}
-
-std::vector<int> PolygonMap::calculatePath( Vector2 from, Vector2 to )
-{
-	walkgraph = mainwalkgraph.clone();
-
-	float mindistanceFrom = 100000;
-	float mindistanceTo = 100000;
-
-	startNodeIndex = walkgraph.nodes.size();
-	if ( !polygons[0].pointInside( from ) )
-	{
-		from = polygons[0].getClosestPointONEdge( from );
-	}
-	if ( !polygons[0].pointInside( to ) )
-	{
-		to = polygons[0].getClosestPointONEdge( to );
-	}
-
-
-	if ( polygons.size() > 1 )
-	{
-		for ( unsigned int i = 1; i < polygons.size(); i++ )
-		{
-			if ( polygons[i].pointInside( to ) )
-			{
-				to = polygons[i].getClosestPointONEdge( to );
-				break;
-			}
-		}
-	}
-
-	targetx = to.X();
-	targety = to.Y();
-
-	GraphNode startNode = GraphNode( Vector2( from.X(), from.Y() ) );
-	Vector2 startNodeVector = Vector2( startNode.pos.X(), startNode.pos.Y() );
-
-	walkgraph.addNode( startNode );
-	for ( unsigned int c_index = 0; c_index < vertices_concave.size(); c_index++ )
-	{
-		Vector2 c = vertices_concave[c_index];
-		if ( InLineOfSight( startNodeVector, c ) )
-		{
-			walkgraph.addEdge( GraphEdge( startNodeIndex, c_index, Distance( startNodeVector, c ) ) );
-		}
-	}
-
-
-	endNodeIndex = walkgraph.nodes.size();
-
-	GraphNode endNode = GraphNode( Vector2( to.X(), to.Y() ) );
-	Vector2 endNodeVector = Vector2( endNode.pos.X(), endNode.pos.Y() );
-
-	walkgraph.addNode( endNode );
-	for ( unsigned int c_index = 0; c_index < vertices_concave.size(); c_index++ )
-	{
-		Vector2 c = vertices_concave[c_index];
-		if ( InLineOfSight( endNodeVector, c ) )
-		{
-			walkgraph.addEdge( GraphEdge( c_index, endNodeIndex, Distance( endNodeVector, c ) ) );
-		}
-	}
-	if ( InLineOfSight( startNodeVector, endNodeVector ) )
-	{
-		walkgraph.addEdge( GraphEdge( startNodeIndex, endNodeIndex, Distance( startNodeVector, endNodeVector ) ) );
-	}
-
-	AstarAlgorithm astar = AstarAlgorithm( walkgraph, startNodeIndex, endNodeIndex );
-	calculatedPath = astar.getPath();
-
-	return calculatedPath;
-
 }
 
 bool PolygonMap::IsVertexConcave( std::vector<Vector2> vertices, int vertex )
@@ -161,7 +88,6 @@ bool PolygonMap::InLineOfSight( Vector2 start, Vector2 end )
 		}
 	}
 
-
 	Vector2 v = Vector2::Add( start, end );
 	Vector2 v2 = Vector2( v.X() / 2, v.Y() / 2 );
 	bool inside = polygons[0].pointInside( v2 );
@@ -171,6 +97,11 @@ bool PolygonMap::InLineOfSight( Vector2 start, Vector2 end )
 			inside = false;
 	}
 	return inside;
+}
+
+void PolygonMap::updatePlayerNode()
+{
+	pfh->updatePlayerNode();
 }
 
 

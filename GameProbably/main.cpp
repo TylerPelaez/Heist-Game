@@ -71,7 +71,7 @@ bool init()
 				}
 			}
 		}
-
+		// TEST CODE
 		player = new Player();
 		pfh = new PathfindingHandler(player);
 		pfh->init();
@@ -94,6 +94,7 @@ bool loadMedia()
 	if (!success)
 		return success;
 	player->bulletSpritePath = "assets/bullet.png";
+	pfh->enemies[0]->setSprite("assets/enemyDot.png");
 
 	return success;
 }
@@ -130,7 +131,6 @@ void render()
 
 void update( float dt )
 {	
-	//player->move();
 	player->update( dt );
 
 	camera.x = ( player->getPos().X() + player->getSprite()->getWidth() / 2 ) - SCREEN_WIDTH  / 2;
@@ -153,7 +153,12 @@ void update( float dt )
 		camera.y = LEVEL_HEIGHT - camera.h; 
 	}
 
-	//pfh->update( dt, camera.x, camera.y );
+	pfh->update( dt, camera.x, camera.y );
+	for (auto enemy : pfh->enemies)
+	{
+		enemy->update(dt);
+	}
+
 }
 
 int main( int argc, char* args[] )

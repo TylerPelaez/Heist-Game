@@ -38,12 +38,12 @@ void Bullet::update(float dt)
 		return;
 	}
 
-	if (team == enemies)
+	if (team == ENEMIES)
 	{
 		SDL_Rect playerRect = { parent->getPos().X(), parent->getPos().Y(), parent->getSprite()->getWidth(), parent->getSprite()->getHeight() };
 		collider.checkCollision(playerRect);
 	}
-	else if (team == players)
+	else if (team == PLAYERS)
 	{
 		return; //TODO
 	}
@@ -88,8 +88,8 @@ bool Bullet::checkWillDestroy()
 			float polyRight = map->polygons[i].vertices[2].X();
 			float polyTop = map->polygons[i].vertices[0].Y();
 			float polyBottom = map->polygons[i].vertices[2].Y();
-			printf("left: %f right: %ftop: %fbottom:%f\n", polyLeft, polyRight, polyTop, polyBottom);
-			printf("posX: %f posY: %f\n", pos.X(), pos.Y());
+			//printf("left: %f right: %ftop: %fbottom:%f\n", polyLeft, polyRight, polyTop, polyBottom);
+			//printf("posX: %f posY: %f\n", pos.X(), pos.Y());
 
 			SDL_Rect polyRect = { polyLeft, polyTop, polyRight - polyLeft, polyBottom - polyTop };
 
